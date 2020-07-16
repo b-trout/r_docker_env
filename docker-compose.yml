@@ -1,0 +1,13 @@
+version: '3'
+services:
+  r:
+    build: .
+    volumes:
+      - .:/home/rstudio
+    ports:
+      - "8787:8787"
+    environment:
+      - DISABLE_AUTH=true
+      - ROOT=true
+    command: /init
+    working_dir: /home/rstudio
