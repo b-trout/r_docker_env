@@ -1,4 +1,4 @@
-# r_docker: R docker environment for table data analysis
+# r_docker_env: R docker environment for table data analysis
 
 ## About this repository
 * With files on this repository, you can create docker image for table data analysis using R.  
