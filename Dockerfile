@@ -1,11 +1,7 @@
-FROM rocker/rstudio:3.6.3
+FROM rocker/rstudio:4.0.0
 
 ENV LANG ja_JP.UTF-8
 ENV LC_ALL ja_JP.UTF-8
-
-# Environment variable setting to specify the snapshot for install.packages()
-ENV BUILD_DATE 2020-06-01
-ENV MRAN https://mran.microsoft.com/snapshot/${BUILD_DATE}
 
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends\
@@ -29,7 +25,7 @@ RUN apt-get update -y \
     libbz2-dev \
     fonts-ipaexfont \
   && rm -rf /var/lib/apt/lists/* \
-  && apt clean
+  && apt-get clean
 
 # Language and tz setting
 RUN sed -i '$d' /etc/locale.gen \
@@ -39,13 +35,13 @@ RUN sed -i '$d' /etc/locale.gen \
 RUN /bin/bash -c "source /etc/default/locale"
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
-# Fix the snapshot for install.packages()
-RUN echo MRAN=${MRAN} > /etc/environment \
-  && echo "options(repos = c(CRAN='${MRAN}'), download.file.method = 'libcurl')" >> ~/.Rprofile \
-  && Rscript -e "install.packages(c('littler', 'docopt', 'remotes'))"
-
+# Fix libraries and their versions to install
 COPY lib_names.csv ./
 COPY install_libraries.R ./
+COPY Rprofile.txt ~/.Rprofile
+
+RUN echo 'www-port=8888' > /etc/rstudio/rserver.conf \
+  && Rscript -e "install.packages(c('littler', 'docopt', 'remotes'))"
 
 # Install R libraries
 RUN Rscript install_libraries.R \
@@ -63,6 +59,6 @@ RUN git clone --recursive https://github.com/microsoft/LightGBM \
   && cd / \
   && rm -r /LightGBM
 
-EXPOSE 8787
+EXPOSE 8888
 
 CMD ["/init"]
