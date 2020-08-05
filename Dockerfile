@@ -23,6 +23,7 @@ RUN apt-get update -y \
     liblz4-tool \
     librsvg2-dev \
     libbz2-dev \
+    libglpk-dev \
     fonts-ipaexfont \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get clean
